@@ -20,7 +20,11 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/jaad" />
+            <option value="$PROJECT_DIR$/jaad/applications" />
+            <option value="$PROJECT_DIR$/jaad/core" />
             <option value="$PROJECT_DIR$/jlayer" />
+            <option value="$PROJECT_DIR$/mp3spi" />
             <option value="$PROJECT_DIR$/tritonus" />
             <option value="$PROJECT_DIR$/tritonus/shared" />
           </set>

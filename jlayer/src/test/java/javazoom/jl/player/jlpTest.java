@@ -25,6 +25,7 @@ import javazoom.jl.player.my.MyJavaSoundAudioDeviceFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import vavix.util.DelayedWorker;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -45,8 +46,6 @@ public class jlpTest {
     private Properties props = null;
     private String filename = null;
 
-    long time;
-
     @BeforeEach
     public void setUp() throws Exception {
         props = new Properties();
@@ -56,7 +55,6 @@ public class jlpTest {
         String name = props.getProperty("filename");
         filename = basefile + name;
         System.err.println(filename);
-        time = System.getProperty("vavi.test", "").equals("ide") ? 100000 : 3000;
     }
 
     @Test
@@ -66,8 +64,9 @@ public class jlpTest {
         args[0] = filename;
         jlp player = jlp.createInstance(args);
         player.setAudioDevice(FactoryRegistry.systemRegistry().createAudioDevice(JavaSoundAudioDeviceFactory.class));
-//        DelayedWorker.later(3000, player::stop);
+        DelayedWorker.later(3000, player::stop);
         player.play();
+
         assertTrue(true, "Play");
     }
 
@@ -79,7 +78,7 @@ public class jlpTest {
         jlp player = jlp.createInstance(args);
         // my audio device might have first priority
         ((MyJavaSoundAudioDevice) player.setAudioDevice()).setVolume(0.05f);
-//        DelayedWorker.later(3000, player::stop);
+        DelayedWorker.later(3000, player::stop);
         player.play();
         assertTrue(true, "Play");
     }
@@ -92,7 +91,7 @@ public class jlpTest {
         jlp player = jlp.createInstance(args);
         player.setAudioDevice(FactoryRegistry.systemRegistry().createAudioDevice(MyJavaSoundAudioDeviceFactory.class));
         ((MyJavaSoundAudioDevice) player.setAudioDevice()).setVolume(0.05f);
-//        DelayedWorker.later(3000, player::stop);
+        DelayedWorker.later(3000, player::stop);
         player.play();
         assertTrue(true, "Play");
     }
