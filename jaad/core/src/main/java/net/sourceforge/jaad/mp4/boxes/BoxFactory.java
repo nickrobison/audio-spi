@@ -1,15 +1,8 @@
 package net.sourceforge.jaad.mp4.boxes;
 
 import net.sourceforge.jaad.mp4.MP4InputStream;
-import jaad.mp4.boxes.impl.*;
-import net.sourceforge.jaad.mp4.boxes.impl.drm.FairPlayDataBox;
-import jaad.mp4.boxes.impl.fd.*;
-import jaad.mp4.boxes.impl.meta.*;
-import jaad.mp4.boxes.impl.oma.*;
-import jaad.mp4.boxes.impl.sampleentries.*;
-import jaad.mp4.boxes.impl.sampleentries.codec.*;
 import net.sourceforge.jaad.mp4.boxes.impl.*;
-import net.sourceforge.jaad.mp4.boxes.impl.ESDBox;
+import net.sourceforge.jaad.mp4.boxes.impl.drm.FairPlayDataBox;
 import net.sourceforge.jaad.mp4.boxes.impl.fd.*;
 import net.sourceforge.jaad.mp4.boxes.impl.meta.*;
 import net.sourceforge.jaad.mp4.boxes.impl.oma.*;

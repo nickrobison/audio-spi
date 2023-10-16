@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * MonoTest.
- *
+ * <p>
  * TODO volume for clip doesn't work on mac (oracle 1.8.0_291)
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
@@ -36,7 +36,9 @@ public class MonoTest {
 
     static Logger logger = Logger.getLogger(SkipTest.class.getName());
 
-    /** play frames limit */
+    /**
+     * play frames limit
+     */
     static int frames;
 
     @BeforeAll
@@ -49,15 +51,15 @@ public class MonoTest {
     void test1() throws Exception {
         AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/mono.mp3"));
         AudioFormat inFormat = in.getFormat();
-logger.info("In Format: " + inFormat.toString());
+        logger.info("In Format: " + inFormat.toString());
         AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                inFormat.getSampleRate(),
-                                                16,
-                                                inFormat.getChannels(),
-                                                inFormat.getChannels(),
-                                                inFormat.getSampleRate(),
-                                                false);
-logger.info("Out Format: " + outFormat.toString());
+                inFormat.getSampleRate(),
+                16,
+                inFormat.getChannels(),
+                inFormat.getChannels(),
+                inFormat.getSampleRate(),
+                false);
+        logger.info("Out Format: " + outFormat.toString());
         AudioInputStream out = AudioSystem.getAudioInputStream(outFormat, in);
         Clip c = AudioSystem.getClip();
         c.open(out);
@@ -73,22 +75,22 @@ logger.info("Out Format: " + outFormat.toString());
         AudioFormat inFormat = in.getFormat();
         logger.info("In Format: " + inFormat.toString());
         AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                inFormat.getSampleRate(),
-                                                16,
-                                                2,
-                                                4,
-                                                inFormat.getSampleRate(),
-                                                false);
-logger.info("Out Format: " + outFormat.toString());
+                inFormat.getSampleRate(),
+                16,
+                2,
+                4,
+                inFormat.getSampleRate(),
+                false);
+        logger.info("Out Format: " + outFormat.toString());
         AudioInputStream out = AudioSystem.getAudioInputStream(outFormat, in);
         AudioFormat outFormat2 = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                 outFormat.getSampleRate(),
-                                                 16,
-                                                 1,
-                                                 2,
-                                                 outFormat.getSampleRate(),
-                                                 false);
-logger.info("Out Format 2: " + outFormat2.toString());
+                outFormat.getSampleRate(),
+                16,
+                1,
+                2,
+                outFormat.getSampleRate(),
+                false);
+        logger.info("Out Format 2: " + outFormat2.toString());
         AudioInputStream out2 = AudioSystem.getAudioInputStream(outFormat2, out);
         Clip c = AudioSystem.getClip();
         c.open(out2);
@@ -104,22 +106,22 @@ logger.info("Out Format 2: " + outFormat2.toString());
         AudioFormat inFormat = in.getFormat();
         logger.info("In Format: " + inFormat.toString());
         AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                inFormat.getSampleRate(),
-                                                16,
-                                                1,
-                                                2,
-                                                inFormat.getSampleRate(),
-                                                false);
-logger.info("Out Format: " + outFormat.toString());
+                inFormat.getSampleRate(),
+                16,
+                1,
+                2,
+                inFormat.getSampleRate(),
+                false);
+        logger.info("Out Format: " + outFormat.toString());
         AudioInputStream out = AudioSystem.getAudioInputStream(outFormat, in);
         AudioFormat outFormat2 = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                 outFormat.getSampleRate(),
-                                                 16,
-                                                 2,
-                                                 4,
-                                                 outFormat.getSampleRate(),
-                                                 false);
-logger.info("Out Format 2: " + outFormat2.toString());
+                outFormat.getSampleRate(),
+                16,
+                2,
+                4,
+                outFormat.getSampleRate(),
+                false);
+        logger.info("Out Format 2: " + outFormat2.toString());
         AudioInputStream out2 = AudioSystem.getAudioInputStream(outFormat2, out);
         Clip c = AudioSystem.getClip();
         c.open(out2);
@@ -135,12 +137,12 @@ logger.info("Out Format 2: " + outFormat2.toString());
             AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/test.mp3"));
             AudioFormat inFormat = in.getFormat();
             AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                    inFormat.getSampleRate(),
-                                                    16,
-                                                    1,
-                                                    2,
-                                                    inFormat.getSampleRate(),
-                                                    false);
+                    inFormat.getSampleRate(),
+                    16,
+                    1,
+                    2,
+                    inFormat.getSampleRate(),
+                    false);
             AudioSystem.getAudioInputStream(outFormat, in);
         });
     }
@@ -152,12 +154,12 @@ logger.info("Out Format 2: " + outFormat2.toString());
             AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/mono.mp3"));
             AudioFormat inFormat = in.getFormat();
             AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                    inFormat.getSampleRate(),
-                                                    16,
-                                                    2,
-                                                    4,
-                                                    inFormat.getSampleRate(),
-                                                    false);
+                    inFormat.getSampleRate(),
+                    16,
+                    2,
+                    4,
+                    inFormat.getSampleRate(),
+                    false);
             AudioSystem.getAudioInputStream(outFormat, in);
         });
     }

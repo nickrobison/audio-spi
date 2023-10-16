@@ -3,7 +3,6 @@ package net.sourceforge.jaad.mp4.api;
 import net.sourceforge.jaad.mp4.MP4InputStream;
 import net.sourceforge.jaad.mp4.boxes.Box;
 import net.sourceforge.jaad.mp4.boxes.BoxTypes;
-import jaad.mp4.boxes.impl.*;
 import net.sourceforge.jaad.mp4.od.DecoderSpecificInfo;
 import net.sourceforge.jaad.mp4.od.Descriptor;
 import net.sourceforge.jaad.mp4.boxes.impl.*;
