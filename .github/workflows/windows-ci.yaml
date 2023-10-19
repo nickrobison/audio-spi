@@ -24,6 +24,8 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
           distribution: "temurin"
+      - name: Start audio server
+        run: net start audiosrv
       - name: List Audio Devices
         run: Get-CimInstance Win32_SoundDevice | fl *
       - name: Disable time sync with Hyper-V & setting system date time (#1573)
