@@ -1,4 +1,4 @@
-name: Windows-CI
+name: CI(linux)
 
 on:
   push:
@@ -14,8 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-
-          - macos-latest
           - ubuntu-latest
         java-version:
           - 11
@@ -23,6 +21,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
+      - name: Install GStreamer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
       - name: Setup JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v3
         with:
