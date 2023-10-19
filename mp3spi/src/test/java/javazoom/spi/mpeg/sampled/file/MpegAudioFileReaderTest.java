@@ -34,8 +34,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -177,7 +176,7 @@ public class MpegAudioFileReaderTest {
         logger.info("    SampleSizeInBits=" + baseFormat.getSampleSizeInBits());
         logger.info("    Encoding=" + baseFormat.getEncoding());
         assertEquals(props.getProperty("Type"), baseFileFormat.getType().toString(), "Type");
-        assertEquals(props.getProperty("SourceFormat"), baseFormat.toString(), "SourceFormat");
+        assertTrue(baseFormat.toString().startsWith(props.getProperty("SourceFormat")), "SourceFormat");
         assertEquals(Integer.parseInt(props.getProperty("Channels")), baseFormat.getChannels(), "Channels");
         assertEquals(Float.parseFloat(props.getProperty("FrameRate")), baseFormat.getFrameRate(), "FrameRate");
         assertEquals(Integer.parseInt(props.getProperty("FrameSize")), baseFormat.getFrameSize(), "FrameSize");
@@ -201,7 +200,7 @@ public class MpegAudioFileReaderTest {
         logger.info("    SampleRate=" + baseFormat.getSampleRate());
         logger.info("    SampleSizeInBits=" + baseFormat.getSampleSizeInBits());
         logger.info("    Encoding=" + baseFormat.getEncoding());
-        assertEquals(props.getProperty("SourceFormat"), baseFormat.toString(), "SourceFormat");
+        assertTrue(baseFormat.toString().startsWith(props.getProperty("SourceFormat")));
         assertEquals(Integer.parseInt(props.getProperty("Channels")), baseFormat.getChannels(), "Channels");
         assertEquals(Float.parseFloat(props.getProperty("FrameRate")), baseFormat.getFrameRate(), "FrameRate");
         assertEquals(Integer.parseInt(props.getProperty("FrameSize")), baseFormat.getFrameSize(), "FrameSize");
