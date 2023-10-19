@@ -26,6 +26,12 @@ jobs:
           distribution: "temurin"
       - name: List Audio Devices
         run: Get-CimInstance Win32_SoundDevice | fl *
+      - name: Disable time sync with Hyper-V & setting system date time (#1573)
+        # TODO(gustl22): Remove workaround of setting the time when virtual audio device certificate is valid again (#1573)
+        run: |
+          Set-Service -Name vmictimesync -Status stopped -StartupType disabled
+          Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\W32Time\Parameters -Name 'Type' -Value 'NoSync'
+          net stop w32time; Set-Date (Get-Date "2023-07-04 12:00:00")
       - name: Install Scream
         shell: powershell
         run: |
@@ -33,6 +39,11 @@ jobs:
           Expand-Archive -Path Scream.zip -DestinationPath Scream
           Import-Certificate -FilePath Scream\Install\driver\x64\Scream.cat -CertStoreLocation Cert:\LocalMachine\TrustedPublisher
           Scream\Install\helpers\devcon-x64.exe install Scream\Install\driver\x64\Scream.inf *Scream
+      - name: Resetting system date time (#1573)
+        run: |
+          Set-Service -Name vmictimesync -Status running -StartupType automatic
+          Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\W32Time\Parameters -Name 'Type' -Value 'NTP'
+          net start w32time; w32tm /resync /force; $currentDate = Get-Date; Write-Host "Current System Date: $currentDate";
       - name: List Audio Devices
         run: Get-CimInstance Win32_SoundDevice | fl *
       - name: Build with Gradle
