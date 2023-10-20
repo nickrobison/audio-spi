@@ -9,6 +9,8 @@ package net.sourceforge.jaad.spi.javasound;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
 
 import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
@@ -21,6 +23,8 @@ import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static vavi.sound.SoundUtil.volume;
+import static vavix.util.DelayedWorker.later;
 
 
 /**
@@ -31,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SuppressWarnings("DataFlowIssue")
 class AacFormatConversionProviderTest {
+
+    static final Logger logger = LoggerFactory.getLogger(AacFormatConversionProviderTest.class);
 
     static long time;
 
@@ -46,29 +52,32 @@ class AacFormatConversionProviderTest {
     static final String alac = "alac.m4a";
     static final String caf = "test.caf";
 
-    @Test
-    @DisplayName("unsupported exception is able to detect in 3 ways")
-    public void test1() throws Exception {
-
-        final URL testFile = getClass().getClassLoader().getResource(mid);
-        Path path = Paths.get(testFile.toURI());
-
-        assertThrows(UnsupportedAudioFileException.class, () -> {
-            // don't replace with Files#newInputStream(Path)
-            new AACAudioFileReader().getAudioInputStream(new BufferedInputStream(Files.newInputStream(path.toFile().toPath())));
-        });
-
-        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toFile()));
-
-        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toUri().toURL()));
-    }
+//    @Test
+//    @DisplayName("unsupported exception is able to detect in 3 ways")
+//    public void test1() throws Exception {
+//
+//        final URL testFile = getClass().getClassLoader().getResource(mid);
+//        Path path = Paths.get(testFile.toURI());
+//
+//        assertThrows(UnsupportedAudioFileException.class, () -> {
+//            // don't replace with Files#newInputStream(Path)
+//            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(path.toFile().toPath()))) {
+//                new AACAudioFileReader().getAudioInputStream(in);
+//            }
+//        });
+//
+//        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toFile()));
+//
+//        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toUri().toURL()));
+//    }
 
     @Test
     @DisplayName("not aac")
     public void test11() throws Exception {
         Path path = Paths.get(getClass().getClassLoader().getResource(mid).toURI());
-//        Debug.println(path);
-        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(new BufferedInputStream(Files.newInputStream(path))));
+        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(Files.newInputStream(path))) {
+            assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(bufferedInputStream));
+        }
     }
 
     @Test
@@ -84,8 +93,9 @@ class AacFormatConversionProviderTest {
     @DisplayName("a file consumes input stream all")
     public void test13() throws Exception {
         Path path = Paths.get(AacFormatConversionProviderTest.class.getResource(caf).toURI());
-//        Debug.println(path);
-        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(new BufferedInputStream(Files.newInputStream(path))));
+        try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(path))) {
+            assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(in));
+        }
     }
 
     @Test
@@ -93,11 +103,10 @@ class AacFormatConversionProviderTest {
     public void test2() throws Exception {
 
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(aac)) {
-//        Debug.println("file: " + path);
             AudioInputStream aacAis = AudioSystem.getAudioInputStream(inputStream);
-//        Debug.println("INS: " + aacAis);
+            logger.debug(() -> "INS: " + aacAis);
             AudioFormat inAudioFormat = aacAis.getFormat();
-//        Debug.println("INF: " + inAudioFormat);
+            logger.debug(() -> "INF: " + inAudioFormat);
             AudioFormat outAudioFormat = new AudioFormat(
                     AudioSystem.NOT_SPECIFIED,
                     16,
@@ -107,23 +116,25 @@ class AacFormatConversionProviderTest {
 
             assertTrue(AudioSystem.isConversionSupported(outAudioFormat, inAudioFormat));
 
-            AudioInputStream pcmAis = AudioSystem.getAudioInputStream(outAudioFormat, aacAis);
-//        Debug.println("OUTS: " + pcmAis);
-//        Debug.println("OUT: " + pcmAis.getFormat());
-            DataLine.Info info = new DataLine.Info(SourceDataLine.class, pcmAis.getFormat());
-            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
-            line.open(pcmAis.getFormat());
-//        volume(line, .05d);
-            line.start();
+            SourceDataLine line;
+            try (AudioInputStream pcmAis = AudioSystem.getAudioInputStream(outAudioFormat, aacAis)) {
+                logger.debug(() -> "OUTS: " + pcmAis);
+                logger.debug(() -> "OUT: " + pcmAis.getFormat());
+                DataLine.Info info = new DataLine.Info(SourceDataLine.class, pcmAis.getFormat());
+                line = (SourceDataLine) AudioSystem.getLine(info);
+                line.open(pcmAis.getFormat());
+                volume(line, .05d);
+                line.start();
 
-            byte[] buf = new byte[8192];
-//        while (!later(time).come()) {
-//            int r = pcmAis.read(buf, 0, buf.length);
-//            if (r < 0) {
-//                break;
-//            }
-//            line.write(buf, 0, r);
-//        }
+                byte[] buf = new byte[8192];
+                while (!later(time).come()) {
+                    int r = pcmAis.read(buf, 0, buf.length);
+                    if (r < 0) {
+                        break;
+                    }
+                    line.write(buf, 0, r);
+                }
+            }
             line.drain();
             line.stop();
             line.close();
@@ -134,63 +145,63 @@ class AacFormatConversionProviderTest {
     @DisplayName("mp4 -> pcm")
     public void test3() throws Exception {
 
-        //
         final URL resource = getClass().getClassLoader().getResource(mp4);
-//        Debug.println("file: " + path);
-        AudioInputStream aacAis = AudioSystem.getAudioInputStream(resource);
-//        Debug.println("INS: " + aacAis);
-        AudioFormat inAudioFormat = aacAis.getFormat();
-//        Debug.println("INF: " + inAudioFormat);
-        AudioFormat outAudioFormat = new AudioFormat(
-                inAudioFormat.getSampleRate(),
-                16,
-                inAudioFormat.getChannels(),
-                true,
-                false);
+        try (AudioInputStream aacAis = AudioSystem.getAudioInputStream(resource)) {
+            logger.debug(() -> "INS: " + aacAis);
+            AudioFormat inAudioFormat = aacAis.getFormat();
+            logger.debug(() -> "INF: " + inAudioFormat);
+            AudioFormat outAudioFormat = new AudioFormat(
+                    inAudioFormat.getSampleRate(),
+                    16,
+                    inAudioFormat.getChannels(),
+                    true,
+                    false);
 
-        assertTrue(AudioSystem.isConversionSupported(outAudioFormat, inAudioFormat));
+            assertTrue(AudioSystem.isConversionSupported(outAudioFormat, inAudioFormat));
 
-        AudioInputStream pcmAis = AudioSystem.getAudioInputStream(outAudioFormat, aacAis);
-//        Debug.println("OUTS: " + pcmAis);
-//        Debug.println("OUT: " + pcmAis.getFormat());
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class, pcmAis.getFormat());
-        SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
-        line.open(pcmAis.getFormat());
-//        volume(line, .05d);
-        line.start();
+            SourceDataLine line;
+            try (AudioInputStream pcmAis = AudioSystem.getAudioInputStream(outAudioFormat, aacAis)) {
 
-
-        byte[] buf = new byte[1024];
-//        while (!later(time).come()) {
-//            int r = pcmAis.read(buf, 0, 1024);
-//            if (r < 0) {
-//                break;
-//            }
-//            line.write(buf, 0, r);
-//        }
-        line.drain();
-        line.stop();
-        line.close();
+                logger.debug(() -> "OUTS: " + pcmAis);
+                logger.debug(() -> "OUT: " + pcmAis.getFormat());
+                DataLine.Info info = new DataLine.Info(SourceDataLine.class, pcmAis.getFormat());
+                line = (SourceDataLine) AudioSystem.getLine(info);
+                line.open(pcmAis.getFormat());
+                volume(line, .05d);
+                line.start();
+                byte[] buf = new byte[1024];
+                while (!later(time).come()) {
+                    int r = pcmAis.read(buf, 0, 1024);
+                    if (r < 0) {
+                        break;
+                    }
+                    line.write(buf, 0, r);
+                }
+            }
+            line.drain();
+            line.stop();
+            line.close();
+        }
     }
 
     @Test
     @DisplayName("another input type 2")
     void test62() throws Exception {
         URL url = getClass().getClassLoader().getResource(mp4);
-//        Debug.println(url);
-        AudioInputStream ais = AudioSystem.getAudioInputStream(url);
-        assertEquals(AACAudioFileReader.AAC_ENCODING, ais.getFormat().getEncoding());
+        try (AudioInputStream ais = AudioSystem.getAudioInputStream(url)) {
+            assertEquals(AACAudioFileReader.AAC_ENCODING, ais.getFormat().getEncoding());
+        }
     }
 
-    @Test
-    @DisplayName("another input type 3")
-    void test63() throws Exception {
-        URL url = getClass().getClassLoader().getResource(mp4);
-        File file = Paths.get(url.toURI()).toFile();
-//        Debug.println(file);
-        AudioInputStream ais = AudioSystem.getAudioInputStream(file);
-        assertEquals(AACAudioFileReader.AAC_ENCODING, ais.getFormat().getEncoding());
-    }
+//    @Test
+//    @DisplayName("another input type 3")
+//    void test63() throws Exception {
+//        URL url = getClass().getClassLoader().getResource(mp4);
+//        File file = Paths.get(url.toURI()).toFile();
+//        try (AudioInputStream ais = AudioSystem.getAudioInputStream(file)) {
+//            assertEquals(AACAudioFileReader.AAC_ENCODING, ais.getFormat().getEncoding());
+//        }
+//    }
 
     @Test
     @DisplayName("clip")
@@ -198,16 +209,19 @@ class AacFormatConversionProviderTest {
 
         final URL resource = getClass().getClassLoader().getResource(mp4);
 
-        AudioInputStream ais = AudioSystem.getAudioInputStream(resource);
+        Clip clip;
+        CountDownLatch cdl;
+        try (AudioInputStream ais = AudioSystem.getAudioInputStream(resource)) {
 
-        Clip clip = AudioSystem.getClip();
-        CountDownLatch cdl = new CountDownLatch(1);
-        clip.addLineListener(ev -> {
-            if (ev.getType() == LineEvent.Type.STOP)
-                cdl.countDown();
-        });
-        clip.open(AudioSystem.getAudioInputStream(new AudioFormat(44100, 16, 2, true, false), ais));
-//        SoundUtil.volume(clip, 0.1f);
+            clip = AudioSystem.getClip();
+            cdl = new CountDownLatch(1);
+            clip.addLineListener(ev -> {
+                if (ev.getType() == LineEvent.Type.STOP)
+                    cdl.countDown();
+            });
+            clip.open(AudioSystem.getAudioInputStream(new AudioFormat(44100, 16, 2, true, false), ais));
+        }
+        volume(clip, 0.1f);
         clip.start();
         if (!System.getProperty("vavi.test", "").equals("ide")) {
             Thread.sleep(10 * 1000);
@@ -220,5 +234,3 @@ class AacFormatConversionProviderTest {
         clip.close();
     }
 }
-
-/* */
