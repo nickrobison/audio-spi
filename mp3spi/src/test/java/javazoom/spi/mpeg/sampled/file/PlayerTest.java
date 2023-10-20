@@ -27,6 +27,7 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -38,9 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class PlayerTest {
 
-    private String basefile = null;
     private String filename = null;
-    private String name = null;
     private Properties props = null;
     private Logger out;
     /** play time limit in milliseconds */
@@ -51,9 +50,7 @@ public class PlayerTest {
         props = new Properties();
         InputStream pin = getClass().getClassLoader().getResourceAsStream("test.mp3.properties");
         props.load(pin);
-        basefile = props.getProperty("basefile");
-        name = props.getProperty("filename");
-        filename = basefile + name;
+        filename = Objects.requireNonNull(getClass().getClassLoader().getResource("test.mp3")).getFile();
         out = Logger.getLogger(PlayerTest.class.getName());
         time = System.getProperty("vavi.test", "").equals("ide") ? 3000 * 1000 : 3 * 1000;
     }

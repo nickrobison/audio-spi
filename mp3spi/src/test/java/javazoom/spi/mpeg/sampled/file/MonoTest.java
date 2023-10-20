@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2021/11/23 umjammer initial version <br>
  */
+@SuppressWarnings("DataFlowIssue")
 public class MonoTest {
 
     static {
@@ -49,7 +50,7 @@ public class MonoTest {
     @Test
     @DisplayName("mono -> mono")
     void test1() throws Exception {
-        AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/mono.mp3"));
+        AudioInputStream in = AudioSystem.getAudioInputStream(this.getClass().getClassLoader().getResourceAsStream("mono.mp3"));
         AudioFormat inFormat = in.getFormat();
         logger.info("In Format: " + inFormat.toString());
         AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
@@ -71,7 +72,7 @@ public class MonoTest {
     @Test
     @DisplayName("stereo -(mp3spi)-> stereo -(tritnus-remaining)-> mono")
     void test2() throws Exception {
-        AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/test.mp3"));
+        AudioInputStream in = AudioSystem.getAudioInputStream(this.getClass().getClassLoader().getResourceAsStream("test.mp3"));
         AudioFormat inFormat = in.getFormat();
         logger.info("In Format: " + inFormat.toString());
         AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
@@ -102,7 +103,7 @@ public class MonoTest {
     @Test
     @DisplayName("mono -(mp3spi)-> mono -(tritnus-remaining)-> stereo")
     void test3() throws Exception {
-        AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/mono.mp3"));
+        AudioInputStream in = AudioSystem.getAudioInputStream(this.getClass().getClassLoader().getResourceAsStream("mono.mp3"));
         AudioFormat inFormat = in.getFormat();
         logger.info("In Format: " + inFormat.toString());
         AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
@@ -134,7 +135,7 @@ public class MonoTest {
     @DisplayName("stereo -> mono -> fail")
     void test4() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
-            AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/test.mp3"));
+            AudioInputStream in = AudioSystem.getAudioInputStream(this.getClass().getClassLoader().getResourceAsStream("test.mp3"));
             AudioFormat inFormat = in.getFormat();
             AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                     inFormat.getSampleRate(),
@@ -151,7 +152,7 @@ public class MonoTest {
     @DisplayName("mono -> stereo -> fail")
     void test5() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
-            AudioInputStream in = AudioSystem.getAudioInputStream(MonoTest.class.getResourceAsStream("/mono.mp3"));
+            AudioInputStream in = AudioSystem.getAudioInputStream(this.getClass().getClassLoader().getResourceAsStream("mono.mp3"));
             AudioFormat inFormat = in.getFormat();
             AudioFormat outFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                     inFormat.getSampleRate(),

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -28,12 +29,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 class PropertiesTest {
 
     private static Logger logger = Logger.getLogger(PropertiesTest.class.getName());
-
-    private String basefile = null;
-    private String baseurl = null;
     private String filename = null;
-    private String fileurl = null;
-    private String name = null;
+    private URL fileurl = null;
     private Properties props = null;
 
     @BeforeEach
@@ -41,11 +38,9 @@ class PropertiesTest {
         props = new Properties();
         InputStream pin = getClass().getClassLoader().getResourceAsStream("test.mp3.properties");
         props.load(pin);
-        basefile = props.getProperty("basefile");
-        baseurl = props.getProperty("baseurl").replaceAll("\\$\\{PWD\\}", System.getProperty("user.dir"));
-        name = props.getProperty("filename");
-        filename = basefile + name;
-        fileurl = baseurl + name;
+        fileurl = getClass().getClassLoader().getResource("test.mp3");
+        filename = Objects.requireNonNull(fileurl).getFile();
+
     }
 
     @Test
@@ -106,8 +101,7 @@ class PropertiesTest {
         final String[] testPropsAF = {
             "vbr", "bitrate"
         };
-        URL url = new URL(fileurl);
-        AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(url);
+        AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(fileurl);
         AudioFormat baseFormat = baseFileFormat.getFormat();
         logger.info("-> URL : " + filename + " <-");
         logger.info(baseFileFormat.toString());
@@ -176,8 +170,7 @@ class PropertiesTest {
 
     @Test
     void testDumpPropertiesURL() throws Exception {
-        URL file = new URL(fileurl);
-        AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(file);
+        AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(fileurl);
         AudioFormat baseFormat = baseFileFormat.getFormat();
         logger.info("-> Filename : " + filename + " <-");
         if (baseFileFormat instanceof TAudioFileFormat) {
