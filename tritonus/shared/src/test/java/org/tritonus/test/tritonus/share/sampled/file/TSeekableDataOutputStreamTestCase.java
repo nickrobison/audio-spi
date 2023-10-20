@@ -25,6 +25,7 @@ import org.tritonus.share.sampled.file.TSeekableDataOutputStream;
 import org.tritonus.test.Util;
 
 import java.io.File;
+import java.nio.file.Files;
 
 
 public class TSeekableDataOutputStreamTestCase
@@ -39,7 +40,7 @@ public class TSeekableDataOutputStreamTestCase
 
     protected TDataOutputStream createDataOutputStream()
             throws Exception {
-        m_file = new File("/tmp/dataoutputstream.tmp");
+        m_file = Files.createTempFile("dataoutputstream", "tmp").toFile();
         return new TSeekableDataOutputStream(m_file);
     }
 

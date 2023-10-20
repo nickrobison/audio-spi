@@ -28,6 +28,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -44,24 +45,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MpegAudioFileReaderTest {
 
     private static Logger logger = Logger.getLogger(MpegAudioFileReaderTest.class.getName());
-
-    private String basefile = null;
-    private String baseurl = null;
     private String filename = null;
-    private String fileurl = null;
-    private String name = null;
+    private URL fileurl = null;
     private Properties props = null;
 
     @BeforeEach
     protected void setUp() throws Exception {
         props = new Properties();
         InputStream pin = getClass().getClassLoader().getResourceAsStream("test.mp3.properties");
+        fileurl = getClass().getClassLoader().getResource("test.mp3");
         props.load(pin);
-        basefile = props.getProperty("basefile");
-        baseurl = props.getProperty("baseurl").replaceAll("\\$\\{PWD\\}", System.getProperty("user.dir"));
-        name = props.getProperty("filename");
-        filename = basefile + name;
-        fileurl = baseurl + name;
+        filename = fileurl.getFile();
     }
 
     @DisplayName("Test for AudioFileFormat getAudioFileFormat(File)")
@@ -84,9 +78,8 @@ public class MpegAudioFileReaderTest {
     public void _testGetAudioFileFormatURL() {
         logger.info("*** testGetAudioFileFormatURL ***");
         try {
-            URL url = new URL(fileurl);
-            AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(url);
-            dumpAudioFileFormat(baseFileFormat, url.toString());
+            AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(fileurl);
+            dumpAudioFileFormat(baseFileFormat, fileurl.toString());
             assertEquals(-1, baseFileFormat.getFrameLength(), "FrameLength");
             assertEquals(-1, baseFileFormat.getByteLength(), "ByteLength");
         } catch (UnsupportedAudioFileException | IOException e) {
@@ -96,10 +89,10 @@ public class MpegAudioFileReaderTest {
 
     @DisplayName("Test for AudioFileFormat getAudioFileFormat(InputStream)")
     @Test
-    public void _testGetAudioFileFormatInputStream() {
+    public void _testGetAudioFileFormatInputStream() throws URISyntaxException {
         logger.info("*** testGetAudioFileFormatInputStream ***");
         try {
-            InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(filename)));
+            InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(fileurl.toURI())));
             AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(in);
             dumpAudioFileFormat(baseFileFormat, in.toString());
             in.close();
@@ -112,10 +105,10 @@ public class MpegAudioFileReaderTest {
 
     @DisplayName("Test for AudioInputStream getAudioInputStream(InputStream)")
     @Test
-    public void _testGetAudioInputStreamInputStream() {
+    public void _testGetAudioInputStreamInputStream() throws URISyntaxException {
         logger.info("*** testGetAudioInputStreamInputStream ***");
         try {
-            InputStream fin = new BufferedInputStream(Files.newInputStream(Paths.get(filename)));
+            InputStream fin = new BufferedInputStream(Files.newInputStream(Paths.get(fileurl.toURI())));
             AudioInputStream in = AudioSystem.getAudioInputStream(fin);
             dumpAudioInputStream(in, fin.toString());
             assertEquals(-1, in.getFrameLength(), "FrameLength");
@@ -148,9 +141,8 @@ public class MpegAudioFileReaderTest {
     public void _testGetAudioInputStreamURL() {
         logger.info("*** testGetAudioInputStreamURL ***");
         try {
-            URL url = new URL(fileurl);
-            AudioInputStream in = AudioSystem.getAudioInputStream(url);
-            dumpAudioInputStream(in, url.toString());
+            AudioInputStream in = AudioSystem.getAudioInputStream(fileurl);
+            dumpAudioInputStream(in, fileurl.toString());
             assertEquals(-1, in.getFrameLength(), "FrameLength");
             assertEquals(Integer.parseInt(props.getProperty("Available")), in.available(), "Available");
             in.close();
