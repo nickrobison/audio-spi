@@ -1,11 +1,9 @@
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.repositories
-
 group = "com.nickrobison.audio"
 version = "1.0-SNAPSHOT"
 
 plugins {
     id("java-library")
+    `maven-publish`
 }
 
 repositories {
@@ -19,4 +17,15 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.nickrobison.audio"
+            version = "0.1-SNAPSHOT"
+
+            from(components["java"])
+        }
+    }
 }
