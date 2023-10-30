@@ -1,9 +1,10 @@
 package net.sourceforge.jaad.mp4.boxes.impl.fd;
 
-import net.sourceforge.jaad.mp4.MP4InputStream;
+import net.sourceforge.jaad.mp4.MP4Input;
 import net.sourceforge.jaad.mp4.boxes.FullBox;
 
 import java.io.IOException;
+
 
 /**
  * The FD item information box is optional, although it is mandatory for files
@@ -19,17 +20,17 @@ import java.io.IOException;
  */
 public class FDItemInformationBox extends FullBox {
 
-	public FDItemInformationBox() {
-		super("FD Item Information Box");
-	}
+    public FDItemInformationBox() {
+        super("FD Item Information Box");
+    }
 
-	@Override
-	public void decode(MP4InputStream in) throws IOException {
-		super.decode(in);
+    @Override
+    public void decode(MP4Input in) throws IOException {
+        super.decode(in);
 
-		final int entryCount = (int) in.readBytes(2);
-		readChildren(in, entryCount); //partition entries
+        int entryCount = (int) in.readBytes(2);
+        readChildren(in, entryCount); // partition entries
 
-		readChildren(in); //FDSessionGroupBox and GroupIDToNameBox
-	}
+        readChildren(in); // FDSessionGroupBox and GroupIDToNameBox
+    }
 }

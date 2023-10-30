@@ -1,7 +1,6 @@
 package net.sourceforge.jaad;
 
 import net.sourceforge.jaad.aac.Decoder;
-import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.adts.ADTSDemultiplexer;
 
 import javax.sound.sampled.AudioFormat;
@@ -66,7 +65,7 @@ public class Radio {
 
 			final ADTSDemultiplexer adts = new ADTSDemultiplexer(in);
 			AudioFormat aufmt = new AudioFormat(adts.getSampleFrequency(), 16, adts.getChannelCount(), true, true);
-			final Decoder dec = new Decoder(adts.getDecoderSpecificInfo());
+			final Decoder dec = Decoder.create(adts.getDecoderInfo());
 
 			while(true) {
 				b = adts.readNextFrame();

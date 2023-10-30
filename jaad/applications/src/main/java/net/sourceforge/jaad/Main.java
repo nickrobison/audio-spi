@@ -1,8 +1,8 @@
 package net.sourceforge.jaad;
 
 import net.sourceforge.jaad.aac.Decoder;
-import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.adts.ADTSDemultiplexer;
+import net.sourceforge.jaad.mp4.MP4Input;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.MP4Container;
 import net.sourceforge.jaad.mp4.api.Frame;
@@ -46,7 +46,7 @@ public class Main {
 	private static void decodeMP4(String in, String out) throws Exception {
 		WaveFileWriter wav = null;
 		try {
-			final MP4Container cont = new MP4Container(new RandomAccessFile(in, "r"));
+			final MP4Container cont = new MP4Container(MP4Input.open(new RandomAccessFile(in, "r")));
 			final Movie movie = cont.getMovie();
 			final List<Track> tracks = movie.getTracks(AudioTrack.AudioCodec.AAC);
 			if(tracks.isEmpty()) throw new Exception("movie does not contain any AAC track");
@@ -54,7 +54,7 @@ public class Main {
 
 			wav = new WaveFileWriter(new File(out), track.getSampleRate(), track.getChannelCount(), track.getSampleSize());
 
-			final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
+			final Decoder dec = Decoder.create(track.getDecoderSpecificInfo().getData());
 
 			Frame frame;
 			final SampleBuffer buf = new SampleBuffer();
@@ -73,7 +73,7 @@ public class Main {
 		WaveFileWriter wav = null;
 		try {
 			final ADTSDemultiplexer adts = new ADTSDemultiplexer(new FileInputStream(in));
-			final Decoder dec = new Decoder(adts.getDecoderSpecificInfo());
+			final Decoder dec = Decoder.create(adts.getDecoderInfo());
 
 			final SampleBuffer buf = new SampleBuffer();
 			byte[] b;

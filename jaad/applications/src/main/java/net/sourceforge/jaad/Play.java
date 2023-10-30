@@ -2,9 +2,9 @@ package net.sourceforge.jaad;
 
 import net.sourceforge.jaad.aac.AACException;
 import net.sourceforge.jaad.aac.Decoder;
-import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.adts.ADTSDemultiplexer;
 import net.sourceforge.jaad.mp4.MP4Container;
+import net.sourceforge.jaad.mp4.MP4Input;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
@@ -52,7 +52,7 @@ public class Play {
 		byte[] b;
 		try {
 			//create container
-			final MP4Container cont = new MP4Container(new RandomAccessFile(in, "r"));
+			final MP4Container cont = new MP4Container(MP4Input.open(new RandomAccessFile(in, "r")));
 			final Movie movie = cont.getMovie();
 			//find AAC track
 			final List<Track> tracks = movie.getTracks(AudioTrack.AudioCodec.AAC);
@@ -66,7 +66,7 @@ public class Play {
 			line.start();
 
 			//create AAC decoder
-			final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
+			final Decoder dec = Decoder.create(track.getDecoderSpecificInfo().getData());
 
 			//decode
 			Frame frame;
@@ -104,7 +104,7 @@ public class Play {
 		byte[] b;
 		try {
 			final ADTSDemultiplexer adts = new ADTSDemultiplexer(in);
-			final Decoder dec = new Decoder(adts.getDecoderSpecificInfo());
+			final Decoder dec = Decoder.create(adts.getDecoderInfo());
 			final SampleBuffer buf = new SampleBuffer();
 			while(true) {
 				b = adts.readNextFrame();
