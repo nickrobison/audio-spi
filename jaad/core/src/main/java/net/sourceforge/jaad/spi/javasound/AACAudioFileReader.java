@@ -219,7 +219,7 @@ logger.fine("reset");
     public AudioInputStream getAudioInputStream(URL url) throws UnsupportedAudioFileException, IOException {
         InputStream inputStream = url.openStream();
         try {
-            return getAudioInputStream(inputStream instanceof BufferedInputStream ? inputStream : new BufferedInputStream(inputStream, Integer.MAX_VALUE - 8));
+            return getAudioInputStream(inputStream instanceof BufferedInputStream ? inputStream : new BufferedInputStream(inputStream));
         } catch (UnsupportedAudioFileException | IOException e) {
             inputStream.close();
             throw e;
@@ -230,7 +230,7 @@ logger.fine("reset");
     public AudioInputStream getAudioInputStream(File file) throws UnsupportedAudioFileException, IOException {
         InputStream inputStream = Files.newInputStream(file.toPath());
         try {
-            return getAudioInputStream(new BufferedInputStream(inputStream, Integer.MAX_VALUE - 8));
+            return getAudioInputStream(new BufferedInputStream(inputStream));
         } catch (UnsupportedAudioFileException | IOException e) {
             inputStream.close();
             throw e;

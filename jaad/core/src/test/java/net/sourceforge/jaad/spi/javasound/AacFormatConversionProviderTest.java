@@ -52,24 +52,24 @@ class AacFormatConversionProviderTest {
     static final String alac = "alac.m4a";
     static final String caf = "test.caf";
 
-//    @Test
-//    @DisplayName("unsupported exception is able to detect in 3 ways")
-//    public void test1() throws Exception {
-//
-//        final URL testFile = getClass().getClassLoader().getResource(mid);
-//        Path path = Paths.get(testFile.toURI());
-//
-//        assertThrows(UnsupportedAudioFileException.class, () -> {
-//            // don't replace with Files#newInputStream(Path)
-//            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(path.toFile().toPath()))) {
-//                new AACAudioFileReader().getAudioInputStream(in);
-//            }
-//        });
-//
-//        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toFile()));
-//
-//        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toUri().toURL()));
-//    }
+    @Test
+    @DisplayName("unsupported exception is able to detect in 3 ways")
+    public void test1() throws Exception {
+
+        final URL testFile = getClass().getClassLoader().getResource(mid);
+        Path path = Paths.get(testFile.toURI());
+
+        assertThrows(UnsupportedAudioFileException.class, () -> {
+            // don't replace with Files#newInputStream(Path)
+            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(path.toFile().toPath()))) {
+                new AACAudioFileReader().getAudioInputStream(in);
+            }
+        });
+
+        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toFile()));
+
+        assertThrows(UnsupportedAudioFileException.class, () -> new AACAudioFileReader().getAudioInputStream(path.toUri().toURL()));
+    }
 
     @Test
     @DisplayName("not aac")
@@ -193,15 +193,15 @@ class AacFormatConversionProviderTest {
         }
     }
 
-//    @Test
-//    @DisplayName("another input type 3")
-//    void test63() throws Exception {
-//        URL url = getClass().getClassLoader().getResource(mp4);
-//        File file = Paths.get(url.toURI()).toFile();
-//        try (AudioInputStream ais = AudioSystem.getAudioInputStream(file)) {
-//            assertEquals(AACAudioFileReader.AAC_ENCODING, ais.getFormat().getEncoding());
-//        }
-//    }
+    @Test
+    @DisplayName("another input type 3")
+    void test63() throws Exception {
+        URL url = getClass().getClassLoader().getResource(mp4);
+        File file = Paths.get(url.toURI()).toFile();
+        try (AudioInputStream ais = AudioSystem.getAudioInputStream(file)) {
+            assertEquals(AACAudioFileReader.AAC_ENCODING, ais.getFormat().getEncoding());
+        }
+    }
 
     @Test
     @DisplayName("clip")
