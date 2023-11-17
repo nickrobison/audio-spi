@@ -1,0 +1,7 @@
+[versions]
+kotlin = "1.9.20"
+junit = "5.9.1"
+
+[libraries]
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }

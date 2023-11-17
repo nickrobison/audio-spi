@@ -1,19 +1,15 @@
-group = "com.nickrobison.audio"
-version = "1.0-SNAPSHOT"
-
 plugins {
-    id("java-library")
+    `java-library`
     `maven-publish`
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
+
+group = "com.nickrobison.audio"
+version = "1.0-SNAPSHOT"
 
 tasks.test {
     useJUnitPlatform()
